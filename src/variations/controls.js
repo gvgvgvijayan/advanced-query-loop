@@ -21,6 +21,7 @@ import { PostExcludeControls } from '../components/post-exclude-controls';
 import { PostIncludeControls } from '../components/post-include-controls';
 import { ExcludeTaxonomies } from '../components/exclude-taxonomies';
 import { PaginationToggle } from '../components/pagination-toggle';
+import { TaxonomySelect } from '../components/taxonomy-select';
 
 /**
  * Determines if the active variation is this one
@@ -61,6 +62,7 @@ const withAdvancedQueryControls = ( BlockEdit ) => ( props ) => {
 								fillProps={ { ...props } }
 							/>
 							<PaginationToggle { ...props } />
+							<TaxonomySelect { ...props } />
 							<MultiplePostSelect { ...props } />
 							<PostOrderControls { ...props } />
 							<PostExcludeControls { ...props } />
