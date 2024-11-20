@@ -19,6 +19,7 @@ class Query_Params_Generator {
 	use Traits\Date_Query;
 	use Traits\Exclude_Taxonomies;
 	use Traits\Disable_Pagination;
+	use Traits\Post_Parent;
 
 
 	/**
@@ -32,6 +33,7 @@ class Query_Params_Generator {
 		'date_query',
 		'exclude_taxonomies',
 		'disable_pagination',
+		'post_parent',
 	);
 
 	/**
@@ -64,6 +66,20 @@ class Query_Params_Generator {
 	public function __construct( $default_params, $custom_params ) {
 		$this->default_params = is_array( $default_params ) ? $default_params : array();
 		$this->custom_params  = is_array( $custom_params ) ? $custom_params : array();
+	}
+
+
+	/**
+	 * Checks to see if the item that is passed is a post ID.
+	 *
+	 * This is used to check if the user is editing a template
+	 *
+	 * @param mixed $possible_post_id The potential post id
+	 *
+	 * @return bool Whether the passed item is a post id or not.
+	 */
+	private function is_post_id( $possible_post_id ) {
+		return is_int( $possible_post_id ) || ! preg_match( '/[a-z\-]+\/\/[a-z\-]+/', $possible_post_id );
 	}
 
 	/**
