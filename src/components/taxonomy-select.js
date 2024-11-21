@@ -1,165 +1,120 @@
 /**
+ * External dependencies
+ */
+import { v4 as uuidv4 } from 'uuid';
+
+/**
  * WordPress dependencies
  */
-import {
-	FormTokenField,
-	SelectControl,
-	ToggleControl,
-} from '@wordpress/components';
+import { Modal, Button, ButtonGroup } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
-import { store as coreStore, useEntityRecords } from '@wordpress/core-data';
-import { useState, useMemo, useEffect } from '@wordpress/element';
-import { useDebounce } from '@wordpress/compose';
+import { store as coreStore } from '@wordpress/core-data';
+import { useState } from '@wordpress/element';
 
-const operatorOptions = [ 'IN', 'NOT IN', 'EXISTS', 'NOT EXISTS', 'AND' ];
+/**
+ * Internal dependencies
+ */
+
+import SingleTaxonomyControl from './single-taxonomy-control';
 
 export const TaxonomySelect = ( { attributes, setAttributes } ) => {
-	const { query: { postType, tax_query: taxQuery = {} } = {} } = attributes;
 	const {
-		taxonomy = '',
-		terms = [],
-		operator,
-		include_children: includeChildren = true,
-	} = taxQuery;
+		query: {
+			postType,
+			tax_query: { relation = '', queries = [] } = {},
+		} = {},
+	} = attributes;
 
-	const [ searchTerm, setSearchTerm ] = useState( '' );
-	const [ isHierarchical, setIsHierarchical ] = useState( false );
-	const debouncedSetSearchTerm = useDebounce( setSearchTerm, 500 );
+	const [ isOpen, setOpen ] = useState( false );
+	const openModal = () => setOpen( true );
+	const closeModal = () => setOpen( false );
 
-	// When there is only 1 term, we need to use the IN operator.
-	useEffect( () => {
-		if ( taxonomy && terms.length < 2 && operator !== 'IN' ) {
-			setAttributes( {
-				query: {
-					...attributes.query,
-					tax_query: {
-						...attributes.query.tax_query,
-						operator: 'IN',
-					},
-				},
-			} );
-		}
-	}, [ attributes, terms, setAttributes, operator, taxonomy ] );
-
-	useEffect( () => {
-		if ( ! taxonomy ) {
-			setAttributes( {
-				query: {
-					...attributes.query,
-					tax_query: {},
-				},
-			} );
-		}
-	}, [ taxonomy, setAttributes ] );
-
-	const taxonomies = useSelect( ( select ) =>
+	const availableTaxonomies = useSelect( ( select ) =>
 		select( coreStore )
 			.getTaxonomies()
-			.filter( ( { types } ) => types.includes( postType ) )
+			?.filter( ( { types } ) => types.includes( postType ) )
 	);
-
-	const { records } = useEntityRecords( 'taxonomy', taxonomy, {
-		per_page: 10,
-		search: searchTerm,
-		_fields: 'id,name',
-		context: 'view',
-	} );
-
-	const suggestions = useMemo( () => {
-		return ( records ?? [] ).map( ( term ) => term.name );
-	}, [ records ] );
 
 	return (
 		<>
-			<h2>{ __( 'Taxonomy Query', 'advanced-query-loop' ) }</h2>
-			<SelectControl
-				label={ __( 'Taxonomy', 'advanced-query-loop' ) }
-				value={ taxQuery?.taxonomy }
-				options={ [
-					{ label: 'Choose taxonomy', value: '' },
-					...taxonomies.map( ( { name, slug } ) => {
-						return { label: name, value: slug };
-					} ),
-				] }
-				onChange={ ( newTaxonomy ) => {
-					setAttributes( {
-						query: {
-							...attributes.query,
-							tax_query: {
-								...attributes.query.taxQuery,
-								taxonomy: newTaxonomy,
-							},
-						},
-					} );
-				} }
-			/>
-			{ taxonomy.length > 1 && (
-				<>
-					<FormTokenField
-						label={ __( 'Term(s)', 'advanced-query-loop' ) }
-						suggestions={ suggestions }
-						value={ terms }
-						onInputChange={ ( newInput ) => {
-							debouncedSetSearchTerm( newInput );
-						} }
-						onChange={ ( newTerms ) => {
-							setAttributes( {
-								query: {
-									...attributes.query,
-									tax_query: {
-										...attributes.query.tax_query,
-										terms: newTerms,
+			<Button variant="primary" onClick={ openModal } size="large">
+				{ __( 'Open Taxonomy query builder', 'advanced-query-loop' ) }
+			</Button>
+			<br />
+			{ isOpen && (
+				<Modal
+					title={ __(
+						'Taxonomy query builder',
+						'advanced-query-loop'
+					) }
+					onRequestClose={ closeModal }
+					size="large"
+				>
+					{ queries.map(
+						( {
+							id,
+							taxonomy,
+							terms,
+							include_children: includeChildren,
+							operator,
+						} ) => {
+							return (
+								<SingleTaxonomyControl
+									key={ id }
+									id={ id }
+									taxonomy={ taxonomy }
+									terms={ terms }
+									includeChildren={ includeChildren }
+									availableTaxonomies={ availableTaxonomies }
+									operator={ operator }
+									setAttributes={ setAttributes }
+									attributes={ attributes }
+								/>
+							);
+						}
+					) }
+					<ButtonGroup>
+						<Button
+							variant="primary"
+							onClick={ () =>
+								setAttributes( {
+									query: {
+										...attributes.query,
+										tax_query: [],
 									},
-								},
-							} );
-						} }
-					/>
-					<ToggleControl
-						label={ __(
-							'Include children?',
-							'advanced-query-loop'
-						) }
-						checked={ includeChildren }
-						onChange={ () => {
-							setAttributes( {
-								query: {
-									...attributes.query,
-									tax_query: {
-										...attributes.query.tax_query,
-										include_children: ! includeChildren,
+								} )
+							}
+						>
+							Reset
+						</Button>
+						<Button
+							variant="primary"
+							onClick={ () => {
+								setAttributes( {
+									query: {
+										...attributes.query,
+										tax_query: {
+											relation,
+											queries: [
+												...queries,
+												{
+													taxonomy: '',
+													terms: [],
+													include_children: true,
+													operator: 'IN',
+													id: uuidv4(),
+												},
+											],
+										},
 									},
-								},
-							} );
-						} }
-						help={ __(
-							'For hierarchical taxonomies only',
-							'advanced-query-loop'
-						) }
-						disabled={ ! isHierarchical }
-					/>
-					<SelectControl
-						label={ __( 'Operator', 'advanced-query-loop' ) }
-						value={ operator }
-						options={ [
-							...operatorOptions.map( ( value ) => {
-								return { label: value, value };
-							} ),
-						] }
-						disabled={ terms.length < 2 }
-						onChange={ ( newOperator ) => {
-							setAttributes( {
-								query: {
-									...attributes.query,
-									tax_query: {
-										...attributes.query.tax_query,
-										operator: newOperator,
-									},
-								},
-							} );
-						} }
-					/>
-				</>
+								} );
+							} }
+						>
+							Add new taxonomy query
+						</Button>
+					</ButtonGroup>
+				</Modal>
 			) }
 		</>
 	);
