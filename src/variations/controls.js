@@ -18,6 +18,7 @@ import { PostDateQueryControls } from '../components/post-date-query-controls';
 import { MultiplePostSelect } from '../components/multiple-post-select';
 import { PostOrderControls } from '../components/post-order-controls';
 import { PostExcludeControls } from '../components/post-exclude-controls';
+import { TaxonomySelect } from '../components/taxonomy-select';
 import { PostIncludeControls } from '../components/post-include-controls';
 import { ExcludeTaxonomies } from '../components/exclude-taxonomies';
 import { PaginationToggle } from '../components/pagination-toggle';
