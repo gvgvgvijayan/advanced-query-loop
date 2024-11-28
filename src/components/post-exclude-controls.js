@@ -70,6 +70,7 @@ export const PostExcludeControls = ( { attributes, setAttributes } ) => {
 								'advanced-query-loop'
 						  )
 				}
+				__nextHasNoMarginBottom
 			/>
 		</>
 	);

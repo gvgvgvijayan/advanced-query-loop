@@ -86,6 +86,7 @@ export const PostMetaQueryControls = ( { attributes, setAttributes } ) => {
 								},
 							} )
 						}
+						__nextHasNoMarginBottom
 					/>
 				) }
 

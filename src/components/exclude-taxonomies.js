@@ -59,6 +59,7 @@ export const ExcludeTaxonomies = ( { attributes, setAttributes } ) => {
 				'Choose taxonomies to exclude from the query.',
 				'advanced-query-loop'
 			) }
+			__nextHasNoMarginBottom
 		>
 			<FormTokenField
 				label={ __( 'Exclude Taxonomies', 'advanced-query-loop' ) }
@@ -87,6 +88,7 @@ export const ExcludeTaxonomies = ( { attributes, setAttributes } ) => {
 				} }
 				__experimentalExpandOnFocus
 				__experimentalShowHowTo={ false }
+				__nextHasNoMarginBottom
 			/>
 		</BaseControl>
 	);

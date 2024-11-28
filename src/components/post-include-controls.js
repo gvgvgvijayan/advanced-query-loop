@@ -96,6 +96,7 @@ export const PostIncludeControls = ( { attributes, setAttributes } ) => {
 					'Start typing to search for a post title or manually enter one.',
 					'advanced-query-loop'
 				) }
+				__nextHasNoMarginBottom
 			>
 				<FormTokenField
 					label={ __( 'Posts', 'advanced-query-loop' ) }
@@ -118,6 +119,7 @@ export const PostIncludeControls = ( { attributes, setAttributes } ) => {
 					} }
 					__experimentalExpandOnFocus
 					__experimentalShowHowTo={ false }
+					__nextHasNoMarginBottom
 				/>
 			</BaseControl>
 		</>
