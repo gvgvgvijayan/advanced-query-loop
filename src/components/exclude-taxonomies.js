@@ -1,36 +1,15 @@
 /**
  * WordPress dependencies
  */
-/**
- * WordPress dependencies
- */
 import { FormTokenField, BaseControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
 
 /**
- * A helper to retrieve the correct items to display or save in the token field
- *
- * @param {Array}  subSet
- * @param {Array}  fullSet
- * @param {string} lookupProperty
- * @param {string} returnProperty
- * @return {Array} The correct items to display or save in the token field
+ * Internal dependencies
  */
-function prepDataFromTokenField(
-	subSet,
-	fullSet,
-	lookupProperty,
-	returnProperty
-) {
-	const subsetFullObjects = fullSet.filter( ( item ) =>
-		subSet.includes( item[ lookupProperty ] )
-	);
-	return subsetFullObjects.map(
-		( { [ returnProperty ]: returnVal } ) => returnVal
-	);
-}
+import { prepDataFromTokenField } from '../utils';
 
 export const ExcludeTaxonomies = ( { attributes, setAttributes } ) => {
 	const {
