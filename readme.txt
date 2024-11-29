@@ -122,12 +122,6 @@ Sort in ascending or descending order by:
 * Fixes a bug where a second AQL instances was getting post meta query values from the first.
 
 = 2.0.0 =
-* ACF custom fields now show in the auto-complete dropdown list for Post Meta Queries ( props to @jvanja  )
-* Adds sort by Post ID ( props to @markhowellsmead )
-* Fixes a typo in the Order By label.
-* Fixes a bug where a second AQL instances was getting post meta query values from the first.
-
-= 2.0.0 =
 * Due to a change in core, Post Count can no longer be overridden when the block is set to inherit the query.
 * Adds Exclude current post option. Props to @Pulsar-X
 * Bump Tested Up To for 6.4
