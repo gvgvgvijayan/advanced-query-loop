@@ -4,47 +4,54 @@
 import {
 	FormTokenField,
 	SelectControl,
+	Button,
 	ToggleControl,
+	__experimentalHStack as HStack,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useSelect } from '@wordpress/data';
-import { store as coreStore, useEntityRecords } from '@wordpress/core-data';
-import { useMemo } from '@wordpress/element';
+import { useEntityRecords } from '@wordpress/core-data';
+import { useMemo, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import useDebouncedInputValue from '../hooks/useDebouncedInputValue';
+import { updateTaxonomyQuery } from '../utils';
+
 const operatorOptions = [ 'IN', 'NOT IN', 'EXISTS', 'NOT EXISTS', 'AND' ];
 
-const updateTaxonomyQuery = ( queries, queryId, item, value ) => {
-	return queries.map( ( query ) => {
-		if ( query.id === queryId ) {
-			return {
-				...query,
-				[ item ]: value,
-			};
-		}
-		return query;
-	} );
-};
+/*
+tax_query: {
+	relation: 'AND',
+	queries: [
+		{
+			taxonomy: 'category',
+			terms: [ 'current events' ],
+			operator: 'IN',
+		},
+		{
+			taxonomy: 'category',
+			terms: [ 'politics' ],
+			operator: 'NOT_IN',
+		},
+	],
+},
+*/
 
 const SingleTaxonomyControl = ( {
-	taxonomy,
-	terms = [],
-	availableTaxonomies,
-	includeChildren,
-	setAttributes,
-	attributes,
 	id,
+	taxonomy,
+	terms,
 	operator,
+	includeChildren,
+	availableTaxonomies,
+	attributes,
+	setAttributes,
+	advancedMode,
+	setAdvancedMode,
+	setDisabled,
 } ) => {
 	const [ searchTerm, setSearchTerm ] = useDebouncedInputValue( '', 500 );
-	const taxInfo = useSelect( ( select ) =>
-		select( coreStore ).getTaxonomy( taxonomy )
-	);
-
-	const isHierarchical = taxInfo?.hierarchical ?? false;
 
 	const { records } = useEntityRecords( 'taxonomy', taxonomy, {
 		per_page: 10,
@@ -57,10 +64,21 @@ const SingleTaxonomyControl = ( {
 		return ( records ?? [] ).map( ( term ) => term.name );
 	}, [ records ] );
 
+	useEffect( () => {
+		if (
+			( operator !== 'IN' && operator !== 'NOT IN' ) ||
+			includeChildren === false
+		) {
+			setAdvancedMode( true );
+			setDisabled( true );
+		} else {
+			setDisabled( false );
+		}
+	}, [ operator, includeChildren ] );
+
 	return (
 		<>
 			<SelectControl
-				key={ id }
 				label={ __( 'Taxonomy', 'advanced-query-loop' ) }
 				value={ taxonomy }
 				options={ [
@@ -88,11 +106,12 @@ const SingleTaxonomyControl = ( {
 						},
 					} );
 				} }
+				__nextHasNoMarginBottom={ false }
 			/>
 			{ taxonomy.length > 1 && (
 				<>
 					<FormTokenField
-						label={ __( 'Term(s)', 'advanced-query-loop' ) }
+						label={ __( 'Terms', 'advanced-query-loop' ) }
 						suggestions={ suggestions }
 						value={ terms }
 						onInputChange={ ( newInput ) => {
@@ -108,46 +127,86 @@ const SingleTaxonomyControl = ( {
 											attributes.query.tax_query.queries,
 											id,
 											'terms',
-											newTerms
+											newTerms,
+											'include'
 										),
 									},
 								},
 							} );
 						} }
+						__nextHasNoMarginBottom={ false }
 					/>
-					<SelectControl
-						label={ __( 'Operator', 'advanced-query-loop' ) }
-						value={ operator }
-						options={ [
-							...operatorOptions.map( ( value ) => {
-								return { label: value, value };
-							} ),
-						] }
-						onChange={ ( newOperator ) => {
-							setAttributes( {
-								query: {
-									...attributes.query,
-									tax_query: {
-										...attributes.query.tax_query,
-										queries: updateTaxonomyQuery(
-											attributes.query.tax_query.queries,
-											id,
-											'operator',
-											newOperator
-										),
-									},
-								},
-							} );
-						} }
-					/>
-					{ isHierarchical && (
+					{ advancedMode ? (
+						<>
+							<SelectControl
+								label={ __(
+									'Operator',
+									'advanced-query-loop'
+								) }
+								value={ operator }
+								options={ [
+									...operatorOptions.map( ( value ) => {
+										return { label: value, value };
+									} ),
+								] }
+								onChange={ ( newOperator ) => {
+									setAttributes( {
+										query: {
+											...attributes.query,
+											tax_query: {
+												...attributes.query.tax_query,
+												queries: updateTaxonomyQuery(
+													attributes.query.tax_query
+														.queries,
+													id,
+													'operator',
+													newOperator
+												),
+											},
+										},
+									} );
+								} }
+								__nextHasNoMarginBottom={ false }
+							/>
+							<ToggleControl
+								label={ __(
+									'Include children',
+									'advanced-query-loop'
+								) }
+								checked={ includeChildren }
+								onChange={ ( include ) => {
+									setAttributes( {
+										query: {
+											...attributes.query,
+											tax_query: {
+												...attributes.query.tax_query,
+												queries: updateTaxonomyQuery(
+													attributes.query.tax_query
+														.queries,
+													id,
+													'include_children',
+													include
+												),
+											},
+										},
+									} );
+								} }
+								__nextHasNoMarginBottom={ false }
+							/>
+						</>
+					) : (
 						<ToggleControl
 							label={ __(
-								'Include children?',
+								'Exclude these terms from the query',
 								'advanced-query-loop'
 							) }
-							checked={ includeChildren }
+							checked={ operator === 'NOT IN' }
 							onChange={ () => {
+								const currentQuery =
+									attributes.query.tax_query.queries.find(
+										( query ) => query.id === id
+									);
+
 								setAttributes( {
 									query: {
 										...attributes.query,
@@ -157,21 +216,47 @@ const SingleTaxonomyControl = ( {
 												attributes.query.tax_query
 													.queries,
 												id,
-												'include_children',
-												! includeChildren
+												'operator',
+												currentQuery.operator === 'IN'
+													? 'NOT IN'
+													: 'IN'
 											),
 										},
 									},
 								} );
 							} }
-							help={ __(
-								'For hierarchical taxonomies only',
-								'advanced-query-loop'
-							) }
+							__nextHasNoMarginBottom={ false }
 						/>
 					) }
 				</>
 			) }
+			<HStack expanded alignment="right">
+				<Button
+					key={ id }
+					variant="secondary"
+					size="small"
+					isDestructive
+					onClick={ () =>
+						setAttributes( {
+							query: {
+								...attributes.query,
+								tax_query: {
+									...attributes.query.tax_query,
+									queries:
+										attributes.query.tax_query.queries.filter(
+											( { id: queryId } ) =>
+												queryId !== id
+										),
+								},
+							},
+						} )
+					}
+				>
+					{ __( 'Remove query', 'advanced-query-loop' ) }
+				</Button>
+			</HStack>
+			<hr />
+			<br />
 		</>
 	);
 };
