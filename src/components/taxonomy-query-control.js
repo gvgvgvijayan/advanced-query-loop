@@ -27,7 +27,6 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import SingleTaxonomyControl from './single-taxonomy-control';
-import { updateTaxonomyQuery } from '../utils';
 
 const relationOptions = [ 'AND', 'OR' ];
 
@@ -61,25 +60,23 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 					offset: 36,
 				} }
 				renderToggle={ ( { isOpen, onToggle } ) => (
-					<>
-						<Button
-							variant="primary"
-							onClick={ onToggle }
-							aria-haspopup="true"
-							aria-expanded={ isOpen }
-							disabled={ availableTaxonomies.length === 0 }
-						>
-							{ isOpen
-								? __(
-										'Close Taxonomy Query Builder',
-										'advanced-query-loop'
-								  )
-								: __(
-										'Taxonomy Query Builder',
-										'advanced-query-loop'
-								  ) }
-						</Button>
-					</>
+					<Button
+						variant="primary"
+						onClick={ onToggle }
+						aria-haspopup="true"
+						aria-expanded={ isOpen }
+						disabled={ availableTaxonomies.length === 0 }
+					>
+						{ isOpen
+							? __(
+									'Close Taxonomy Query Builder',
+									'advanced-query-loop'
+							  )
+							: __(
+									'Open Taxonomy Query Builder',
+									'advanced-query-loop'
+							  ) }
+					</Button>
 				) }
 				renderContent={ () => (
 					<DropdownContentWrapper
