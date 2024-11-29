@@ -16,6 +16,7 @@ import {
 	ToggleControl,
 	Panel,
 	__experimentalHStack as HStack,
+	SelectControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
@@ -26,6 +27,9 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import SingleTaxonomyControl from './single-taxonomy-control';
+import { updateTaxonomyQuery } from '../utils';
+
+const relationOptions = [ 'AND', 'OR' ];
 
 export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 	const {
@@ -89,6 +93,43 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 							) }
 						>
 							<PanelBody>
+								{ advancedMode && (
+									<>
+										<SelectControl
+											label={ __(
+												'Relationship',
+												'advanced-query-loop'
+											) }
+											value={ relation }
+											options={ [
+												...relationOptions.map(
+													( value ) => {
+														return {
+															label: value,
+															value,
+														};
+													}
+												),
+											] }
+											onChange={ ( newRelation ) => {
+												setAttributes( {
+													query: {
+														...attributes.query,
+														tax_query: {
+															...attributes.query
+																.tax_query,
+															relation:
+																newRelation,
+														},
+													},
+												} );
+											} }
+											__nextHasNoMarginBottom={ false }
+										/>
+										<hr />
+									</>
+								) }
+
 								{ queries.map(
 									( {
 										id,
@@ -104,6 +145,7 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 												operator={ operator }
 												terms={ terms }
 												id={ id }
+												relation={ relation }
 												includeChildren={
 													includeChildren
 												}
@@ -174,14 +216,15 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 											<Button
 												variant="primary"
 												isDestructive
-												onClick={ () =>
+												onClick={ () => {
 													setAttributes( {
 														query: {
 															...attributes.query,
 															tax_query: [],
 														},
-													} )
-												}
+													} );
+													setAdvancedMode( false );
+												} }
 											>
 												{ __(
 													'Reset queries',

@@ -43,6 +43,7 @@ const SingleTaxonomyControl = ( {
 	taxonomy,
 	terms,
 	operator,
+	relation,
 	includeChildren,
 	availableTaxonomies,
 	attributes,
@@ -67,14 +68,15 @@ const SingleTaxonomyControl = ( {
 	useEffect( () => {
 		if (
 			( operator !== 'IN' && operator !== 'NOT IN' ) ||
-			includeChildren === false
+			includeChildren === false ||
+			relation !== 'AND'
 		) {
 			setAdvancedMode( true );
 			setAdvancedToggleDisabled( true );
 		} else {
 			setAdvancedToggleDisabled( false );
 		}
-	}, [ operator, includeChildren ] );
+	}, [ operator, includeChildren, relation ] );
 
 	return (
 		<>
