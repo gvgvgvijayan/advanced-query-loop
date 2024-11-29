@@ -61,11 +61,11 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 						>
 							{ isOpen
 								? __(
-										'Close Taxonomy Query',
+										'Close Taxonomy Query Builder',
 										'advanced-query-loop'
 								  )
 								: __(
-										'Taxonomy Query',
+										'Taxonomy Query Builder',
 										'advanced-query-loop'
 								  ) }
 						</Button>
@@ -110,7 +110,9 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 												setAdvancedMode={
 													setAdvancedMode
 												}
-												setDisabled={ setDisabled }
+												setAdvancedToggleDisabled={
+													setDisabled
+												}
 											/>
 										);
 									}

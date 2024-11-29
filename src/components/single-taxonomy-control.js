@@ -49,7 +49,7 @@ const SingleTaxonomyControl = ( {
 	setAttributes,
 	advancedMode,
 	setAdvancedMode,
-	setDisabled,
+	setAdvancedToggleDisabled,
 } ) => {
 	const [ searchTerm, setSearchTerm ] = useDebouncedInputValue( '', 500 );
 
@@ -70,9 +70,9 @@ const SingleTaxonomyControl = ( {
 			includeChildren === false
 		) {
 			setAdvancedMode( true );
-			setDisabled( true );
+			setAdvancedToggleDisabled( true );
 		} else {
-			setDisabled( false );
+			setAdvancedToggleDisabled( false );
 		}
 	}, [ operator, includeChildren ] );
 
