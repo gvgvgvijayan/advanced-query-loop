@@ -19,6 +19,7 @@ class Query_Params_Generator {
 	use Traits\Date_Query;
 	use Traits\Exclude_Taxonomies;
 	use Traits\Disable_Pagination;
+	use Traits\Tax_Query;
 
 
 	/**
@@ -32,6 +33,7 @@ class Query_Params_Generator {
 		'date_query',
 		'exclude_taxonomies',
 		'disable_pagination',
+		'tax_query',
 	);
 
 	/**
@@ -71,7 +73,7 @@ class Query_Params_Generator {
 	 *
 	 * @param string $param_name The param to look for.
 	 */
-	public function has_custom_param( string $param_name ): bool {
+	public function has_custom_param( string $param_name): bool {
 		return array_key_exists( $param_name, $this->custom_params ) && ! empty( $this->custom_params[ $param_name ] );
 	}
 
