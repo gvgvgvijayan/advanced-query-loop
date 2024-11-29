@@ -14,7 +14,7 @@ trait Tax_Query {
 	public function parse_tax_query( $queries ) {
 		$tax_query = [];
 		// Don't process empty array of queries.
-		if ( count( $queries['queries'] ) > 0 ) {
+		if ( isset( $queries['queries'] ) && count( $queries['queries'] ) > 0 ) {
 			// Handle the relation parameter.
 			if ( isset( $queries['relation'] ) && count( $queries['queries'] ) > 1 ) {
 				$tax_query['relation'] = $queries['relation'];
