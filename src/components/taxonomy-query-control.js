@@ -31,6 +31,7 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 	const {
 		query: {
 			postType,
+			multiple_posts: multiplePosts = [],
 			tax_query: { relation = '', queries = [] } = {},
 		} = {},
 	} = attributes;
@@ -38,7 +39,11 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 	const availableTaxonomies = useSelect( ( select ) =>
 		select( coreStore )
 			.getTaxonomies()
-			?.filter( ( { types } ) => types.includes( postType ) )
+			?.filter( ( { types } ) =>
+				types.some( ( type ) =>
+					[ postType, ...multiplePosts ].includes( type )
+				)
+			)
 	);
 
 	const [ advancedMode, setAdvancedMode ] = useState( false );
@@ -58,6 +63,7 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 							onClick={ onToggle }
 							aria-haspopup="true"
 							aria-expanded={ isOpen }
+							disabled={ availableTaxonomies.length === 0 }
 						>
 							{ isOpen
 								? __(
