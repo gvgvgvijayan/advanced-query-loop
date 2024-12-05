@@ -23,14 +23,21 @@ if ( ! function_exists( 'add_filter' ) ) {
 			// Hijack the global query. It's a hack, but it works.
 			if ( isset( $parsed_block['attrs']['query']['inherit'] ) && true === $parsed_block['attrs']['query']['inherit'] ) {
 				global $wp_query;
+
 				$query_args = array_merge(
 					$wp_query->query_vars,
 					array(
 						'posts_per_page' => $parsed_block['attrs']['query']['perPage'],
 						'order'          => $parsed_block['attrs']['query']['order'],
 						'orderby'        => $parsed_block['attrs']['query']['orderBy'],
+						'post_types'     => [$parsed_block['attrs']['query']['postType'], ...$parsed_block['attrs']['query']['multiple_posts']],
 					)
 				);
+
+				// Maybe this is how I can do it better?
+				add_action( 'pre_get_posts', function( $query ) use  ( $query_args ) {
+					$query->set( 'post_type', $query_args['post_types'] );
+				} );
 
 				/**
 				 * Filter the query vars.
