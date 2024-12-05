@@ -48,6 +48,7 @@ export const PostExcludeControls = ( { attributes, setAttributes } ) => {
 		<>
 			<h2> { __( 'Exclude Posts', 'advanced-query-loop' ) }</h2>
 			<ToggleControl
+				__nextHasNoMarginBottom
 				label={ __( 'Exclude Current Post', 'advanced-query-loop' ) }
 				checked={ !! excludeCurrent }
 				disabled={ isDisabled() }

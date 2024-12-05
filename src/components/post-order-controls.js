@@ -89,6 +89,7 @@ export const PostOrderControls = ( { attributes, setAttributes } ) => {
 				} }
 			/>
 			<ToggleControl
+				__nextHasNoMarginBottom
 				label={ __( 'Ascending Order', 'advanced-query-loop' ) }
 				checked={ order === 'asc' }
 				onChange={ () => {
