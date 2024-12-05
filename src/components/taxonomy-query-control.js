@@ -16,19 +16,15 @@ import {
 	ToggleControl,
 	Panel,
 	__experimentalHStack as HStack,
-	SelectControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
-import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import SingleTaxonomyControl from './single-taxonomy-control';
-
-const relationOptions = [ 'AND', 'OR' ];
 
 export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 	const {
@@ -48,8 +44,6 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 				)
 			)
 	);
-
-	const advancedMode = false;
 
 	return (
 		<>
@@ -93,10 +87,14 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 									<>
 										<ToggleControl
 											label={ __(
-												'Use an OR relationship',
+												'Combine filters',
 												'advanced-query-loop'
 											) }
-											checked={ relation === 'OR' }
+											help={ __(
+												'By default, filters are combined with the OR operator. Enable this option to combine filters with the AND operator.',
+												'advanced-query-loop'
+											) }
+											checked={ relation === 'AND' }
 											onChange={ () => {
 												setAttributes( {
 													query: {
@@ -159,7 +157,7 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 													...attributes.query,
 													tax_query: {
 														relation:
-															relation || 'AND',
+															relation || 'OR',
 														queries: [
 															...queries,
 
@@ -192,7 +190,6 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 														tax_query: [],
 													},
 												} );
-												setAdvancedMode( false );
 											} }
 										>
 											{ __(

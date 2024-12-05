@@ -18,8 +18,13 @@ import { useMemo, useEffect, useState } from '@wordpress/element';
  */
 import useDebouncedInputValue from '../hooks/useDebouncedInputValue';
 import { updateTaxonomyQuery } from '../utils';
+const advancedOperators = [ 'EXISTS', 'NOT EXISTS', 'AND' ];
+const operatorOptions = [ 'IN', 'NOT IN', ...advancedOperators ];
 
-const operatorOptions = [ 'IN', 'NOT IN', 'EXISTS', 'NOT EXISTS', 'AND' ];
+const toggleMargin = {
+	marginTop: '1.5em',
+	marginBottom: '0.75em',
+};
 
 /*
 tax_query: {
@@ -38,13 +43,11 @@ tax_query: {
 	],
 },
 */
-
 const SingleTaxonomyControl = ( {
 	id,
 	taxonomy,
 	terms,
 	operator,
-	relation,
 	includeChildren,
 	availableTaxonomies,
 	attributes,
@@ -53,6 +56,8 @@ const SingleTaxonomyControl = ( {
 	const [ searchTerm, setSearchTerm ] = useDebouncedInputValue( '', 500 );
 
 	const [ advancedMode, setAdvancedMode ] = useState( false );
+	const [ disableAdvancedToggle, setDisableAdvancedToggle ] =
+		useState( false );
 	const { records } = useEntityRecords( 'taxonomy', taxonomy, {
 		per_page: 10,
 		search: searchTerm,
@@ -66,13 +71,15 @@ const SingleTaxonomyControl = ( {
 
 	useEffect( () => {
 		if (
-			( operator !== 'IN' && operator !== 'NOT IN' ) ||
-			includeChildren === false ||
-			relation !== 'AND'
+			advancedOperators.includes( operator ) ||
+			includeChildren === false
 		) {
 			setAdvancedMode( true );
+			setDisableAdvancedToggle( true );
+		} else {
+			setDisableAdvancedToggle( false );
 		}
-	}, [ operator, includeChildren, relation ] );
+	}, [ operator, includeChildren ] );
 
 	return (
 		<>
@@ -104,7 +111,7 @@ const SingleTaxonomyControl = ( {
 						},
 					} );
 				} }
-				__nextHasNoMarginBottom={ false }
+				__next40pxDefaultSize
 			/>
 			{ taxonomy.length > 1 && (
 				<>
@@ -132,7 +139,7 @@ const SingleTaxonomyControl = ( {
 								},
 							} );
 						} }
-						__nextHasNoMarginBottom={ false }
+						__next40pxDefaultSize
 					/>
 					{ advancedMode ? (
 						<>
@@ -164,33 +171,39 @@ const SingleTaxonomyControl = ( {
 										},
 									} );
 								} }
-								__nextHasNoMarginBottom={ false }
+								__next40pxDefaultSize
 							/>
-							<ToggleControl
-								label={ __(
-									'Include children',
-									'advanced-query-loop'
-								) }
-								checked={ includeChildren }
-								onChange={ ( include ) => {
-									setAttributes( {
-										query: {
-											...attributes.query,
-											tax_query: {
-												...attributes.query.tax_query,
-												queries: updateTaxonomyQuery(
-													attributes.query.tax_query
-														.queries,
-													id,
-													'include_children',
-													include
-												),
+							<div style={ toggleMargin }>
+								<ToggleControl
+									label={ __(
+										'Include children',
+										'advanced-query-loop'
+									) }
+									className="advanced-query-loop__include-children"
+									checked={ includeChildren }
+									onChange={ ( include ) => {
+										setAttributes( {
+											query: {
+												...attributes.query,
+												tax_query: {
+													...attributes.query
+														.tax_query,
+													queries:
+														updateTaxonomyQuery(
+															attributes.query
+																.tax_query
+																.queries,
+															id,
+															'include_children',
+															include
+														),
+												},
 											},
-										},
-									} );
-								} }
-								__nextHasNoMarginBottom={ false }
-							/>
+										} );
+									} }
+									__next40pxDefaultSize
+								/>
+							</div>
 						</>
 					) : (
 						<ToggleControl
@@ -223,18 +236,22 @@ const SingleTaxonomyControl = ( {
 									},
 								} );
 							} }
-							__nextHasNoMarginBottom={ false }
+							__next40pxDefaultSize
 						/>
 					) }
 				</>
 			) }
 			<hr />
-			<HStack alignment={ taxonomy ? 'edge' : 'right' }>
+			<HStack
+				alignment={ taxonomy ? 'edge' : 'right' }
+				style={ toggleMargin }
+			>
 				{ taxonomy && (
 					<ToggleControl
 						checked={ advancedMode }
 						label={ __( 'Advanced mode', 'advanced-query-loop' ) }
 						onChange={ () => setAdvancedMode( ! advancedMode ) }
+						disabled={ disableAdvancedToggle }
 						__nextHasNoMarginBottom
 					/>
 				) }
