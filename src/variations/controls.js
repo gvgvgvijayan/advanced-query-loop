@@ -61,15 +61,15 @@ const withAdvancedQueryControls = ( BlockEdit ) => ( props ) => {
 							<AQLLegacyControls.Slot
 								fillProps={ { ...props } }
 							/>
-							<PaginationToggle { ...props } />
 							<MultiplePostSelect { ...props } />
+							<TaxonomyQueryControl { ...props } />
+							<PostMetaQueryControls { ...props } />
 							<PostOrderControls { ...props } />
 							<PostExcludeControls { ...props } />
-							<TaxonomyQueryControl { ...props } />
 							<PostIncludeControls { ...props } />
 							<ChildItemsToggle { ...props } />
-							<PostMetaQueryControls { ...props } />
 							<PostDateQueryControls { ...props } />
+							<PaginationToggle { ...props } />
 							<AQLControls.Slot fillProps={ { ...props } } />
 						</PanelBody>
 					</InspectorControls>
