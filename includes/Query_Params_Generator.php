@@ -17,8 +17,8 @@ class Query_Params_Generator {
 	use Traits\Include_Posts;
 	use Traits\Meta_Query;
 	use Traits\Date_Query;
-	use Traits\Exclude_Taxonomies;
 	use Traits\Disable_Pagination;
+	use Traits\Tax_Query;
 	use Traits\Post_Parent;
 
 
@@ -31,8 +31,8 @@ class Query_Params_Generator {
 		'include_posts',
 		'meta_query',
 		'date_query',
-		'exclude_taxonomies',
 		'disable_pagination',
+		'tax_query',
 		'post_parent',
 	);
 

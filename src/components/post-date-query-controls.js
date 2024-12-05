@@ -65,6 +65,7 @@ export const PostDateQueryControls = ( { attributes, setAttributes } ) => {
 						},
 					} );
 				} }
+				__nextHasNoMarginBottom
 			/>
 			{ range !== '' && (
 				<CheckboxControl
@@ -156,6 +157,7 @@ export const PostDateQueryControls = ( { attributes, setAttributes } ) => {
 						},
 					} );
 				} }
+				__nextHasNoMarginBottom
 			/>
 			{ relationFromQuery !== '' &&
 				! relationFromQuery.includes( 'current' ) && (

@@ -25,6 +25,7 @@ export const PaginationToggle = ( { attributes, setAttributes } ) => {
 					},
 				} );
 			} }
+			__nextHasNoMarginBottom
 		/>
 	);
 };

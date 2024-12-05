@@ -18,8 +18,8 @@ import { PostDateQueryControls } from '../components/post-date-query-controls';
 import { MultiplePostSelect } from '../components/multiple-post-select';
 import { PostOrderControls } from '../components/post-order-controls';
 import { PostExcludeControls } from '../components/post-exclude-controls';
+import { TaxonomyQueryControl } from '../components/taxonomy-query-control';
 import { PostIncludeControls } from '../components/post-include-controls';
-import { ExcludeTaxonomies } from '../components/exclude-taxonomies';
 import { PaginationToggle } from '../components/pagination-toggle';
 import { ChildItemsToggle } from '../components/child-items-toggle';
 
@@ -65,7 +65,7 @@ const withAdvancedQueryControls = ( BlockEdit ) => ( props ) => {
 							<MultiplePostSelect { ...props } />
 							<PostOrderControls { ...props } />
 							<PostExcludeControls { ...props } />
-							<ExcludeTaxonomies { ...props } />
+							<TaxonomyQueryControl { ...props } />
 							<PostIncludeControls { ...props } />
 							<ChildItemsToggle { ...props } />
 							<PostMetaQueryControls { ...props } />

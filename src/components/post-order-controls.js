@@ -87,6 +87,7 @@ export const PostOrderControls = ( { attributes, setAttributes } ) => {
 						},
 					} );
 				} }
+				__nextHasNoMarginBottom
 			/>
 			<ToggleControl
 				__nextHasNoMarginBottom
@@ -100,6 +101,7 @@ export const PostOrderControls = ( { attributes, setAttributes } ) => {
 						},
 					} );
 				} }
+				__nextHasNoMarginBottom
 			/>
 		</>
 	);
