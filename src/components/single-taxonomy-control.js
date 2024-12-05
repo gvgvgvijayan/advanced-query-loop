@@ -11,7 +11,7 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useEntityRecords } from '@wordpress/core-data';
-import { useMemo, useEffect } from '@wordpress/element';
+import { useMemo, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -49,12 +49,10 @@ const SingleTaxonomyControl = ( {
 	availableTaxonomies,
 	attributes,
 	setAttributes,
-	advancedMode,
-	setAdvancedMode,
-	setAdvancedToggleDisabled,
 } ) => {
 	const [ searchTerm, setSearchTerm ] = useDebouncedInputValue( '', 500 );
 
+	const [ advancedMode, setAdvancedMode ] = useState( false );
 	const { records } = useEntityRecords( 'taxonomy', taxonomy, {
 		per_page: 10,
 		search: searchTerm,
@@ -73,9 +71,6 @@ const SingleTaxonomyControl = ( {
 			relation !== 'AND'
 		) {
 			setAdvancedMode( true );
-			setAdvancedToggleDisabled( true );
-		} else {
-			setAdvancedToggleDisabled( false );
 		}
 	}, [ operator, includeChildren, relation ] );
 
@@ -233,7 +228,16 @@ const SingleTaxonomyControl = ( {
 					) }
 				</>
 			) }
-			<HStack expanded alignment="right">
+			<hr />
+			<HStack alignment={ taxonomy ? 'edge' : 'right' }>
+				{ taxonomy && (
+					<ToggleControl
+						checked={ advancedMode }
+						label={ __( 'Advanced mode', 'advanced-query-loop' ) }
+						onChange={ () => setAdvancedMode( ! advancedMode ) }
+						__nextHasNoMarginBottom
+					/>
+				) }
 				<Button
 					key={ id }
 					variant="secondary"

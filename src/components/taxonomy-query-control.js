@@ -49,8 +49,7 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 			)
 	);
 
-	const [ advancedMode, setAdvancedMode ] = useState( false );
-	const [ disabled, setDisabled ] = useState( false );
+	const advancedMode = false;
 
 	return (
 		<>
@@ -90,25 +89,15 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 							) }
 						>
 							<PanelBody>
-								{ advancedMode && (
+								{ queries.length > 1 && (
 									<>
-										<SelectControl
+										<ToggleControl
 											label={ __(
-												'Relationship',
+												'Use an OR relationship',
 												'advanced-query-loop'
 											) }
-											value={ relation }
-											options={ [
-												...relationOptions.map(
-													( value ) => {
-														return {
-															label: value,
-															value,
-														};
-													}
-												),
-											] }
-											onChange={ ( newRelation ) => {
+											checked={ relation === 'OR' }
+											onChange={ () => {
 												setAttributes( {
 													query: {
 														...attributes.query,
@@ -116,7 +105,12 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 															...attributes.query
 																.tax_query,
 															relation:
-																newRelation,
+																attributes.query
+																	.tax_query
+																	.relation ===
+																'OR'
+																	? 'AND'
+																	: 'OR',
 														},
 													},
 												} );
@@ -151,13 +145,6 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 												}
 												setAttributes={ setAttributes }
 												attributes={ attributes }
-												advancedMode={ advancedMode }
-												setAdvancedMode={
-													setAdvancedMode
-												}
-												setAdvancedToggleDisabled={
-													setDisabled
-												}
 											/>
 										);
 									}
@@ -195,40 +182,24 @@ export const TaxonomyQueryControl = ( { attributes, setAttributes } ) => {
 										) }
 									</Button>
 									{ queries.length > 0 && (
-										<>
-											<ToggleControl
-												checked={ advancedMode }
-												label={ __(
-													'Advanced mode',
-													'advanced-query-loop'
-												) }
-												onChange={ () =>
-													setAdvancedMode(
-														! advancedMode
-													)
-												}
-												disabled={ disabled }
-												__nextHasNoMarginBottom
-											/>
-											<Button
-												variant="primary"
-												isDestructive
-												onClick={ () => {
-													setAttributes( {
-														query: {
-															...attributes.query,
-															tax_query: [],
-														},
-													} );
-													setAdvancedMode( false );
-												} }
-											>
-												{ __(
-													'Reset queries',
-													'advanced-query-loop'
-												) }
-											</Button>
-										</>
+										<Button
+											variant="primary"
+											isDestructive
+											onClick={ () => {
+												setAttributes( {
+													query: {
+														...attributes.query,
+														tax_query: [],
+													},
+												} );
+												setAdvancedMode( false );
+											} }
+										>
+											{ __(
+												'Reset queries',
+												'advanced-query-loop'
+											) }
+										</Button>
 									) }
 								</HStack>
 							</PanelBody>
