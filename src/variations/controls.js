@@ -87,6 +87,7 @@ const withAdvancedQueryControls = ( BlockEdit ) => ( props ) => {
 							'advanced-query-loop'
 						) }
 					>
+						<MultiplePostSelect { ...props } />
 						<PostOrderControls { ...props } />
 						<AQLControlsInheritedQuery.Slot
 							fillProps={ { ...props } }
